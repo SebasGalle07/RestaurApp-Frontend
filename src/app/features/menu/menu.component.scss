@@ -1,0 +1,131 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+}
+
+.main {
+  display: grid;
+  gap: 1.5rem;
+}
+
+form.form-grid {
+  display: grid;
+  gap: 1rem;
+
+  label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 0.55rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid #cbd5f5;
+    font-size: 0.95rem;
+  }
+
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  button {
+    justify-self: start;
+    padding: 0.55rem 1.2rem;
+    border-radius: 10px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+  }
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+th,
+td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background: #f1f5f9;
+}
+
+tr.selected {
+  background: #dbeafe;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions button {
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: none;
+  background: #0ea5e9;
+  color: #fff;
+}
+
+.actions .danger {
+  background: #ef4444;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: #22c55e;
+  color: #022c22;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.badge.inactive {
+  background: #f59e0b;
+  color: #3b1f08;
+}
+
+.error {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.edit-panel {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+}

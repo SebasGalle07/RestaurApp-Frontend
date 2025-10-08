@@ -1,0 +1,279 @@
+<section class="pos">
+  <div class="toast" *ngIf="feedback() as toast" [class]="toast.type">
+    <span>{{ toast.message }}</span>
+  </div>
+
+  <ng-container [ngSwitch]="step()">
+    <div class="pos__layout" *ngSwitchCase="'menu'">
+      <section class="pos-menu card">
+        <header class="pos-menu__header">
+          <div>
+            <h1>Menú del Restaurante</h1>
+            <p>Selecciona los artículos para agregar al pedido</p>
+          </div>
+          <div class="pos-menu__search">
+            <input type="search"
+                   placeholder="Buscar platos..."
+                   [value]="searchTerm()"
+                   (input)="actualizarBusqueda($any($event.target).value)" />
+          </div>
+        </header>
+
+        <div class="pos-menu__categories">
+          <button type="button"
+                  class="chip"
+                  [class.active]="selectedCategory() === chip.id"
+                  *ngFor="let chip of categoryChips()"
+                  (click)="seleccionarCategoria(chip.id)">
+            <span>{{ chip.icon }}</span>
+            <span>{{ chip.label }}</span>
+          </button>
+        </div>
+
+        <div class="pos-menu__list">
+          <article class="menu-card"
+                   *ngFor="let item of filteredMenu()"
+                   [class.disabled]="!item.activo">
+            <div class="menu-card__head">
+              <div>
+                <h3>{{ item.nombre }}</h3>
+                <p>{{ item.descripcion || 'Sin descripción' }}</p>
+              </div>
+              <strong class="menu-card__price">
+                {{ item.precio | currency:'EUR':'symbol':'1.2-2' }}
+              </strong>
+            </div>
+
+            <div class="menu-card__footer">
+              <span class="tag danger" *ngIf="!item.activo">No disponible</span>
+              <button type="button"
+                      class="btn btn-primary"
+                      [disabled]="!item.activo"
+                      (click)="addToCart(item)">
+                <span *ngIf="item.activo">+ Agregar</span>
+                <span *ngIf="!item.activo">No disponible</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <aside class="pos-cart card" [class.empty]="cartCount() === 0">
+        <header class="pos-cart__header">
+          <div>
+            <h2>Carrito</h2>
+            <small *ngIf="cartCount() > 0">{{ cartCount() }} artículo(s)</small>
+            <small *ngIf="cartCount() === 0">Aún no tienes artículos</small>
+          </div>
+        </header>
+
+        <div class="pos-cart__items" *ngIf="cartCount() > 0; else emptyCart">
+          <div class="cart-item" *ngFor="let item of cart()">
+            <div class="cart-item__info">
+              <h3>{{ item.menu.nombre }}</h3>
+              <p>{{ item.menu.precio | currency:'EUR':'symbol':'1.2-2' }}</p>
+              <textarea rows="2"
+                        placeholder="Notas opcionales"
+                        [value]="item.notes || ''"
+                        (input)="actualizarNotas(item.menu.id, $any($event.target).value)"></textarea>
+            </div>
+
+            <div class="cart-item__controls">
+              <div class="quantity">
+                <button type="button" (click)="decreaseQuantity(item.menu.id)">-</button>
+                <span>{{ item.quantity }}</span>
+                <button type="button" (click)="increaseQuantity(item.menu.id)">+</button>
+              </div>
+              <button type="button" class="remove" (click)="removeFromCart(item.menu.id)">
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #emptyCart>
+          <div class="pos-cart__empty">
+            <p>Tu carrito está vacío. Agrega platos directamente desde el menú.</p>
+          </div>
+        </ng-template>
+
+        <footer class="pos-cart__footer">
+          <div class="pos-cart__total">
+            <span>Total</span>
+            <strong>{{ cartTotal() | currency:'EUR':'symbol':'1.2-2' }}</strong>
+          </div>
+          <button type="button"
+                  class="btn btn-primary"
+                  (click)="goToDetails()"
+                  [disabled]="!checkoutAllowed()">
+            Enviar a cocina
+          </button>
+        </footer>
+      </aside>
+
+      <button type="button"
+              class="floating-cart"
+              *ngIf="cartCount() > 0"
+              (click)="goToDetails()">
+        <span>🧾</span>
+        <span class="badge">{{ cartCount() }}</span>
+      </button>
+    </div>
+
+    <section class="pos-step card" *ngSwitchCase="'details'">
+      <button type="button" class="pos-step__back" (click)="backToMenu()">← Volver al menú</button>
+      <h2>Finalizar Pedido</h2>
+      <p class="pos-step__subtitle">Completa los datos para enviar a cocina</p>
+
+      <form class="form-grid" [formGroup]="detailsForm">
+        <label>
+          Número de mesa *
+          <select formControlName="mesaId">
+            <option value="">Selecciona una mesa</option>
+            <option *ngFor="let mesa of mesas()" [value]="mesa.id">
+              Mesa {{ mesa.numero }}
+            </option>
+          </select>
+        </label>
+
+        <label>
+          Mesero asignado *
+          <select formControlName="meseroId">
+            <option value="">Selecciona mesero</option>
+            <option *ngFor="let mesero of meseros()" [value]="mesero.id">
+              {{ mesero.nombre }} ({{ mesero.codigo }})
+            </option>
+          </select>
+        </label>
+
+        <label>
+          Nombre del cliente (opcional)
+          <input type="text" formControlName="cliente" placeholder="Nombre para el pedido" />
+        </label>
+
+        <label>
+          Notas especiales (opcional)
+          <textarea rows="3"
+                    formControlName="notas"
+                    placeholder="Alergias, preferencias de cocción, etc."></textarea>
+        </label>
+
+        <label class="toggle">
+          <input type="checkbox" formControlName="procesarFactura" />
+          <span>Procesar facturación al completar el pedido</span>
+        </label>
+      </form>
+
+      <div class="pos-step__summary" *ngIf="cartCount() > 0">
+        <h3>Resumen del pedido</h3>
+        <ul>
+          <li *ngFor="let item of cart()">
+            <span>{{ item.quantity }}x {{ item.menu.nombre }}</span>
+            <strong>{{ (item.menu.precio * item.quantity) | currency:'EUR':'symbol':'1.2-2' }}</strong>
+          </li>
+        </ul>
+        <div class="pos-step__total">
+          <span>Total</span>
+          <strong>{{ cartTotal() | currency:'EUR':'symbol':'1.2-2' }}</strong>
+        </div>
+      </div>
+
+      <div class="pos-step__actions">
+        <button type="button" class="btn btn-outline" (click)="backToMenu()">Volver</button>
+        <button type="button"
+                class="btn btn-primary"
+                [disabled]="loading()"
+                (click)="proceedToInvoice()">
+          {{ detailsForm.value.procesarFactura ? 'Continuar a facturación' : 'Enviar a cocina' }}
+        </button>
+      </div>
+    </section>
+
+    <section class="pos-step card" *ngSwitchCase="'invoice'">
+      <button type="button" class="pos-step__back" (click)="backToDetails()">← Volver</button>
+      <h2>Proceso de facturación</h2>
+      <p class="pos-step__subtitle">Completa los datos para la factura (opcional)</p>
+
+      <form class="form-grid" [formGroup]="invoiceForm">
+        <label class="toggle">
+          <input type="checkbox" formControlName="necesitaFactura" />
+          <span>¿Necesita factura oficial?</span>
+        </label>
+
+        <div class="invoice-fields" [class.disabled]="!invoiceForm.value.necesitaFactura">
+          <label>
+            Nombre del cliente
+            <input type="text" formControlName="nombreCliente" placeholder="Nombre completo" />
+          </label>
+          <label>
+            Email
+            <input type="email" formControlName="email" placeholder="cliente@email.com" />
+          </label>
+          <label>
+            Teléfono
+            <input type="tel" formControlName="telefono" placeholder="+34 600 000 000" />
+          </label>
+          <label>
+            Nombre de la empresa (opcional)
+            <input type="text" formControlName="empresa" placeholder="Nombre de la empresa" />
+          </label>
+          <label>
+            NIF/CIF (opcional)
+            <input type="text" formControlName="taxId" placeholder="12345678A" />
+          </label>
+          <label>
+            Dirección
+            <input type="text" formControlName="direccion" placeholder="Dirección para la factura" />
+          </label>
+          <label>
+            Notas adicionales
+            <textarea rows="3"
+                      formControlName="notasAdicionales"
+                      placeholder="Observaciones o comentarios adicionales"></textarea>
+          </label>
+        </div>
+      </form>
+
+      <div class="pos-step__actions">
+        <button type="button" class="btn btn-outline" (click)="backToDetails()">Volver</button>
+        <button type="button"
+                class="btn btn-primary"
+                [disabled]="loading()"
+                (click)="submitOrder()">
+          Completar pedido
+        </button>
+      </div>
+    </section>
+
+    <section class="pos-step card confirmation" *ngSwitchCase="'confirmation'">
+      <div class="confirmation__icon">✅</div>
+      <h2>¡Pedido enviado!</h2>
+      <p>El pedido se envió a cocina exitosamente.</p>
+
+      <div class="confirmation__summary" *ngIf="pedidoResumen() as resumen">
+        <ul>
+          <li>
+            <span>Pedido</span>
+            <strong>#{{ resumen.id }}</strong>
+          </li>
+          <li>
+            <span>Mesa</span>
+            <strong>{{ mesaDisplay(resumen) }}</strong>
+          </li>
+          <li>
+            <span>Total</span>
+            <strong>{{ resumen.total | currency:'EUR':'symbol':'1.2-2' }}</strong>
+          </li>
+          <li *ngIf="resumen.notas">
+            <span>Notas</span>
+            <strong>{{ resumen.notas }}</strong>
+          </li>
+        </ul>
+      </div>
+
+      <div class="pos-step__actions">
+        <button type="button" class="btn btn-primary" (click)="resetFlow()">Nuevo pedido</button>
+      </div>
+    </section>
+  </ng-container>
+</section>

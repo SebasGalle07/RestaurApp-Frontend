@@ -1,0 +1,47 @@
+<section class="auth">
+  <article class="auth-card">
+    <div class="auth-card__brand">
+      <div class="auth-card__logo">Ψφ</div>
+      <h1>RestaurantePOS</h1>
+      <p>Inicia sesión para acceder al sistema de pedidos</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="auth-card__form">
+      <label>
+        Usuario
+        <input type="email"
+               placeholder="Ingresa tu usuario"
+               formControlName="email" />
+        <span class="field-error" *ngIf="loginForm.controls.email.touched && loginForm.controls.email.invalid">
+          Ingresa un correo válido.
+        </span>
+      </label>
+
+      <label>
+        Contraseña
+        <div class="password-field">
+          <input [type]="showPassword() ? 'text' : 'password'"
+                 placeholder="Ingresa tu contraseña"
+                 formControlName="password" />
+          <button type="button" (click)="togglePasswordVisibility()" aria-label="Mostrar u ocultar contraseña">
+            {{ showPassword() ? 'Ocultar' : 'Mostrar' }}
+          </button>
+        </div>
+        <span class="field-error" *ngIf="loginForm.controls.password.touched && loginForm.controls.password.invalid">
+          La contraseña es obligatoria.
+        </span>
+      </label>
+
+      <button type="submit" class="btn btn-primary" [disabled]="loading()">
+        <span *ngIf="!loading()">Iniciar sesión</span>
+        <span *ngIf="loading()">Iniciando…</span>
+      </button>
+    </form>
+
+    <footer class="auth-card__footer">
+      <small>Usuario demo: <strong>admin&#64;resto.com</strong> · Clave: <strong>Secreta123</strong></small>
+    </footer>
+
+    <p class="auth-card__error" *ngIf="error()">{{ error() }}</p>
+  </article>
+</section>

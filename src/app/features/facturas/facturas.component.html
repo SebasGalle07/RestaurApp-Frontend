@@ -1,0 +1,63 @@
+<section class="grid">
+  <aside class="card">
+    <h2>Emitir factura</h2>
+    <form [formGroup]="emitirForm" (ngSubmit)="emitir()" class="form-grid">
+      <label>Pedido ID <input formControlName="pedidoId" /></label>
+      <button type="submit">Generar</button>
+    </form>
+
+    <h3>Filtros</h3>
+    <form [formGroup]="filtrosForm" (ngSubmit)="listar()" class="form-grid">
+      <label>Mesa ID <input formControlName="mesa_id" /></label>
+      <label>Mesero UUID <input formControlName="mesero_id" /></label>
+      <label>Desde <input type="date" formControlName="desde" /></label>
+      <label>Hasta <input type="date" formControlName="hasta" /></label>
+      <label>
+        Ordenar
+        <select formControlName="sort">
+          <option value="fechaEmision,desc">Fecha desc</option>
+          <option value="fechaEmision,asc">Fecha asc</option>
+        </select>
+      </label>
+      <button type="submit">Aplicar</button>
+    </form>
+  </aside>
+
+  <section class="card">
+    <h2>Facturas</h2>
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Numero</th>
+          <th>Pedido</th>
+          <th>Total</th>
+          <th>Fecha</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let factura of facturas()">
+          <td>{{ factura.id }}</td>
+          <td>{{ factura.numero }}</td>
+          <td>{{ factura.pedidoId }}</td>
+          <td>{{ factura.total | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ factura.fechaEmision | date:'short' }}</td>
+          <td><button (click)="verDetalle(factura.id)">Detalle</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <article class="detalle" *ngIf="detalle() as fact">
+      <h3>Factura #{{ fact.numero }}</h3>
+      <ul>
+        <li><strong>Pedido:</strong> {{ fact.pedidoId }}</li>
+        <li><strong>Mesa:</strong> {{ fact.mesaNumero }} ({{ fact.mesaId }})</li>
+        <li><strong>Mesero:</strong> <span class="mono">{{ fact.meseroId }}</span></li>
+        <li><strong>Total:</strong> {{ fact.total | currency:'USD':'symbol':'1.2-2' }}</li>
+        <li><strong>Fecha:</strong> {{ fact.fechaEmision | date:'medium' }}</li>
+      </ul>
+    </article>
+  </section>
+</section>

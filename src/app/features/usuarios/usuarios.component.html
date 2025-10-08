@@ -1,0 +1,84 @@
+<section class="grid">
+  <aside class="card">
+    <h2>Crear usuario</h2>
+    <form [formGroup]="crearForm" (ngSubmit)="crear()" class="form-grid">
+      <label>Nombre<input formControlName="nombre" /></label>
+      <label>Email<input formControlName="email" type="email" /></label>
+      <label>Password<input formControlName="password" type="password" /></label>
+      <label>Rol
+        <select formControlName="rol">
+          <option *ngFor="let rol of roles" [value]="rol">{{ rol | titlecase }}</option>
+        </select>
+      </label>
+      <label class="switch"><input type="checkbox" formControlName="activo" /> Activo</label>
+      <button type="submit">Crear</button>
+    </form>
+
+    <h3>Buscar por codigo</h3>
+    <input type="number" placeholder="Codigo" #codigo (input)="buscarPorCodigo(codigo.value)" />
+    <pre *ngIf="detalleCodigo() as detalle">{{ detalle | json }}</pre>
+  </aside>
+
+  <section class="card">
+    <header class="list-header">
+      <h2>Usuarios</h2>
+      <form [formGroup]="filtrosForm" (ngSubmit)="buscar()" class="filters">
+        <select formControlName="rol">
+          <option value="">Rol</option>
+          <option *ngFor="let rol of roles" [value]="rol">{{ rol | titlecase }}</option>
+        </select>
+        <select formControlName="activo">
+          <option value="">Estado</option>
+          <option value="true">Activos</option>
+          <option value="false">Inactivos</option>
+        </select>
+        <button type="submit">Filtrar</button>
+      </form>
+    </header>
+
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of usuarios()" [class.selected]="seleccionado()?.id === user.id" (click)="seleccionar(user)">
+          <td>{{ user.codigo }}</td>
+          <td>{{ user.nombre }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.rol | uppercase }}</td>
+          <td>
+            <span class="badge" [class.inactive]="!user.activo">{{ user.activo ? 'Activo' : 'Inactivo' }}</span>
+          </td>
+          <td>
+            <button class="danger" (click)="eliminar(user); $event.stopPropagation();">Desactivar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <section class="editar" *ngIf="seleccionado() as user">
+      <h3>Editar {{ user.nombre }}</h3>
+      <form [formGroup]="editarForm" (ngSubmit)="actualizar()" class="form-grid">
+        <label>Nombre<input formControlName="nombre" /></label>
+        <label>Email<input formControlName="email" /></label>
+        <label>Nueva password<input formControlName="password" type="password" /></label>
+        <label>Rol
+          <select formControlName="rol">
+            <option *ngFor="let rol of roles" [value]="rol">{{ rol | titlecase }}</option>
+          </select>
+        </label>
+        <label class="switch"><input type="checkbox" formControlName="activo" /> Activo</label>
+        <button type="submit">Guardar cambios</button>
+      </form>
+    </section>
+  </section>
+</section>

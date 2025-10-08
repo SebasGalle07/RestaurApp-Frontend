@@ -1,0 +1,95 @@
+<section class="layout">
+  <aside class="card">
+    <h2>Filtro</h2>
+    <form [formGroup]="filtrosForm" (ngSubmit)="buscar()" class="form-grid">
+      <label>
+        Categoria
+        <select formControlName="categoria_id">
+          <option value="">Todas</option>
+          <option *ngFor="let cat of categorias()" [value]="cat.id">{{ cat.nombre }}</option>
+        </select>
+      </label>
+      <label>
+        Estado
+        <select formControlName="activo">
+          <option value="">Todos</option>
+          <option value="true">Activos</option>
+          <option value="false">Inactivos</option>
+        </select>
+      </label>
+      <label>
+        Busqueda
+        <input formControlName="q" placeholder="Nombre o descripcion" />
+      </label>
+      <button type="submit">Aplicar filtros</button>
+    </form>
+
+    <h3>Nuevo item</h3>
+    <form [formGroup]="crearForm" (ngSubmit)="crear()" class="form-grid">
+      <label>Nombre <input formControlName="nombre" /></label>
+      <label>Descripcion <textarea formControlName="descripcion"></textarea></label>
+      <label>Precio <input type="number" step="0.01" formControlName="precio" /></label>
+      <label>
+        Categoria
+        <select formControlName="categoria_id">
+          <option value="">Selecciona</option>
+          <option *ngFor="let cat of categorias()" [value]="cat.id">{{ cat.nombre }}</option>
+        </select>
+      </label>
+      <label class="switch">
+        <input type="checkbox" formControlName="activo" /> Activo
+      </label>
+      <button type="submit">Agregar</button>
+    </form>
+  </aside>
+
+  <div class="card main">
+    <h2>Catalogo</h2>
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Categoria</th>
+          <th>Precio</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items()" [class.selected]="selected()?.id === item.id">
+          <td>
+            <strong>{{ item.nombre }}</strong>
+            <div class="muted" *ngIf="item.descripcion">{{ item.descripcion }}</div>
+          </td>
+          <td>{{ item.categoriaNombre }}</td>
+          <td>{{ item.precio | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>
+            <span class="badge" [class.inactive]="!item.activo">{{ item.activo ? 'Activo' : 'Inactivo' }}</span>
+          </td>
+          <td class="actions">
+            <button (click)="seleccionar(item)">Editar</button>
+            <button class="danger" (click)="eliminar(item)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <section class="edit-panel" *ngIf="selected() as item">
+      <h3>Editar {{ item.nombre }}</h3>
+      <form [formGroup]="patchForm" (ngSubmit)="guardarCambios()" class="form-grid">
+        <label>Nombre <input formControlName="nombre" /></label>
+        <label>Descripcion <textarea formControlName="descripcion"></textarea></label>
+        <label>Precio <input type="number" step="0.01" formControlName="precio" /></label>
+        <label>
+          Categoria
+          <select formControlName="categoria_id">
+            <option [value]="cat.id" *ngFor="let cat of categorias()">{{ cat.nombre }}</option>
+          </select>
+        </label>
+        <label class="switch"><input type="checkbox" formControlName="activo" /> Activo</label>
+        <button type="submit">Guardar</button>
+      </form>
+    </section>
+  </div>
+</section>

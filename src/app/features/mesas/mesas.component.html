@@ -1,0 +1,15 @@
+<section class="card">
+  <header>
+    <h2>Mesas disponibles</h2>
+    <button (click)="cargar()" [disabled]="loading()">Actualizar</button>
+  </header>
+
+  <p class="error" *ngIf="error()">{{ error() }}</p>
+
+  <div class="list">
+    <article *ngFor="let mesa of mesas()" class="mesa">
+      <span class="numero">Mesa {{ mesa.numero }}</span>
+      <span class="id">ID: {{ mesa.id }}</span>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,179 @@
+<div class="grid">
+  <aside class="card">
+    <h2>Nuevo pedido</h2>
+    <form [formGroup]="pedidoForm" (ngSubmit)="crear()" class="form-grid">
+      <label>
+        Mesa
+        <select formControlName="mesa_id">
+          <option value="">Selecciona</option>
+          <option *ngFor="let mesa of mesas()" [value]="mesa.id">Mesa {{ mesa.numero }}</option>
+        </select>
+      </label>
+      <label>
+        Mesero (UUID)
+        <input formControlName="mesero_id" placeholder="uuid" list="meserosList" />
+      </label>
+      <label>
+        Notas
+        <textarea formControlName="notas"></textarea>
+      </label>
+
+      <section class="items-list">
+        <header>
+          <h3>Items</h3>
+          <button type="button" (click)="agregarItem()">Agregar item</button>
+        </header>
+
+        <div *ngFor="let item of itemForms; let i = index" [formGroup]="item" class="item-row">
+          <label>
+            Menu
+            <select formControlName="item_menu_id">
+              <option value="">Selecciona</option>
+              <option *ngFor="let menu of menuItems()" [value]="menu.id">{{ menu.nombre }} ({{ menu.id }})</option>
+            </select>
+          </label>
+          <label>
+            Cantidad
+            <input type="number" min="1" formControlName="cantidad" />
+          </label>
+          <label>
+            Notas
+            <input formControlName="notas" />
+          </label>
+          <button type="button" class="danger" (click)="quitarItem(i)" *ngIf="itemsArray.length > 1">Quitar</button>
+        </div>
+      </section>
+
+      <button type="submit">Crear pedido</button>
+    </form>
+    <datalist id="meserosList">
+      <option *ngFor="let mesero of meseros()" [value]="mesero.id">{{ mesero.nombre }} ({{ mesero.codigo }})</option>
+    </datalist>
+  </aside>
+
+  <section class="card">
+    <header class="list-header">
+      <h2>Pedidos</h2>
+      <form [formGroup]="filtrosForm" (ngSubmit)="buscar()" class="filters">
+        <select formControlName="mesa_id">
+          <option value="">Mesa</option>
+          <option *ngFor="let mesa of mesas()" [value]="mesa.id">{{ mesa.numero }}</option>
+        </select>
+        <select formControlName="estado">
+          <option value="">Estado</option>
+          <option value="ABIERTO">ABIERTO</option>
+          <option value="EN_PREPARACION">EN_PREPARACION</option>
+          <option value="LISTO">LISTO</option>
+          <option value="ENTREGADO">ENTREGADO</option>
+          <option value="CERRADO">CERRADO</option>
+          <option value="CANCELADO">CANCELADO</option>
+        </select>
+        <input type="date" formControlName="desde" />
+        <input type="date" formControlName="hasta" />
+        <button type="submit">Filtrar</button>
+      </form>
+    </header>
+
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Mesa</th>
+          <th>Mesero</th>
+          <th>Estado</th>
+          <th>Total</th>
+          <th>Creado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pedido of pedidos()" (click)="seleccionarPedido(pedido)" [class.selected]="seleccionado()?.id === pedido.id">
+          <td>{{ pedido.id }}</td>
+          <td>{{ pedido.mesaNumero }}</td>
+          <td class="mono">{{ pedido.meseroId }}</td>
+          <td>{{ pedido.estado }}</td>
+          <td>{{ pedido.total | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ pedido.createdAt | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <section class="detalle" *ngIf="seleccionado() as pedido">
+      <header>
+        <h3>Pedido #{{ pedido.id }}</h3>
+        <div class="actions">
+          <button (click)="actualizarPedido()">Actualizar notas</button>
+          <button (click)="enviarACocina()">Enviar a cocina</button>
+          <button class="danger" (click)="cancelar()">Cancelar</button>
+        </div>
+      </header>
+
+      <section class="nuevo-detalle">
+        <h4>Agregar item</h4>
+        <form [formGroup]="nuevoDetalleForm" (ngSubmit)="agregarDetalle(pedido)" class="item-inline-form">
+          <label>
+            Menu
+            <select formControlName="item_menu_id">
+              <option value="">Selecciona</option>
+              <option *ngFor="let menu of menuItems()" [value]="menu.id">{{ menu.nombre }} ({{ menu.id }})</option>
+            </select>
+          </label>
+          <label>
+            Cantidad
+            <input type="number" min="1" formControlName="cantidad" />
+          </label>
+          <label>
+            Notas
+            <input formControlName="notas" placeholder="Notas opcionales" />
+          </label>
+          <button type="submit">Agregar</button>
+        </form>
+      </section>
+
+      <form [formGroup]="notaForm" class="nota-form">
+        <label>Mesero UUID<input formControlName="mesero_id" list="meserosList" /></label>
+        <label>Notas<textarea formControlName="notas"></textarea></label>
+      </form>
+
+      <h4>Items</h4>
+      <table class="items">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Menu</th>
+            <th>Cantidad</th>
+            <th>Notas</th>
+            <th>Subtotal</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let item of itemsSeleccionado(); let i = index">
+            <tr *ngIf="detalleFormGroups[i] as detalleForm" [formGroup]="detalleForm">
+              <td>{{ item.id }}</td>
+              <td>{{ item.itemMenuNombre }} ({{ item.itemMenuId }})</td>
+              <td><input type="number" min="1" formControlName="cantidad" /></td>
+              <td><input formControlName="notas" placeholder="Notas" /></td>
+              <td>{{ item.subtotal | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td>
+                <select formControlName="estado">
+                  <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+                </select>
+              </td>
+              <td class="row-actions">
+                <button type="button" (click)="guardarDetalle(pedido, item, i)" [disabled]="detalleForm.invalid">Guardar</button>
+                <button type="button" (click)="actualizarEstado(pedido, item, i)" [disabled]="detalleForm.invalid">Estado</button>
+                <button type="button" class="danger" (click)="eliminarDetalle(pedido, item)">Eliminar</button>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </section>
+  </section>
+</div>
+
+
+

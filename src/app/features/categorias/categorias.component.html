@@ -1,0 +1,49 @@
+<section class="grid">
+  <article class="card">
+    <h2>Categorias</h2>
+    <button (click)="refrescar()" [disabled]="loading()">Recargar</button>
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+    <ul>
+      <li *ngFor="let cat of categorias()" [class.selected]="selected()?.id === cat.id">
+        <div>
+          <strong>{{ cat.nombre }}</strong>
+          <span class="muted" *ngIf="cat.descripcion">{{ cat.descripcion }}</span>
+        </div>
+        <div class="actions">
+          <button (click)="seleccionar(cat)">Editar</button>
+          <button class="danger" (click)="eliminar(cat)">Eliminar</button>
+        </div>
+      </li>
+    </ul>
+  </article>
+
+  <article class="card">
+    <h3>Nueva categoria</h3>
+    <form [formGroup]="createForm" (ngSubmit)="crear()" class="form-grid">
+      <label>
+        Nombre
+        <input formControlName="nombre" />
+      </label>
+      <label>
+        Descripcion
+        <textarea formControlName="descripcion"></textarea>
+      </label>
+      <button type="submit" [disabled]="loading()">Crear</button>
+    </form>
+  </article>
+
+  <article class="card" *ngIf="selected() as cat">
+    <h3>Editar categoria</h3>
+    <form [formGroup]="updateForm" (ngSubmit)="actualizar()" class="form-grid">
+      <label>
+        Nombre
+        <input formControlName="nombre" />
+      </label>
+      <label>
+        Descripcion
+        <textarea formControlName="descripcion"></textarea>
+      </label>
+      <button type="submit" [disabled]="loading()">Guardar cambios</button>
+    </form>
+  </article>
+</section>

@@ -1,0 +1,91 @@
+.grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.08);
+}
+
+form.form-grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+form.form-grid label {
+  display: grid;
+  gap: 0.3rem;
+}
+
+form.form-grid input,
+form.form-grid select {
+  border-radius: 10px;
+  border: 1px solid #cbd5f5;
+  padding: 0.5rem 0.8rem;
+}
+
+form.form-grid button {
+  justify-self: start;
+  padding: 0.55rem 1.1rem;
+  border-radius: 10px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+th,
+td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background: #eef2ff;
+}
+
+button {
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: none;
+  background: #0ea5e9;
+  color: #fff;
+}
+
+.detalle {
+  margin-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+}
+
+.detalle ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.mono {
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+}
+
+.error {
+  color: #dc2626;
+}

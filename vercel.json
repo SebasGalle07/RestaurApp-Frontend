@@ -4,6 +4,10 @@
   "outputDirectory": "dist/restaurapp-frontend/browser",
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "https://restaurapp-backend.onrender.com/api/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/"
     }

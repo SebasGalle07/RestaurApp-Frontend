@@ -7,6 +7,38 @@
     </form>
   </header>
 
+  <section class="pendientes">
+    <div class="pendientes-header">
+      <h3>Pedidos pendientes de pago</h3>
+      <button type="button" (click)="cargarPendientes()">Actualizar</button>
+    </div>
+    <p class="muted" *ngIf="!pendientes().length">No hay pedidos con saldo pendiente.</p>
+    <table *ngIf="pendientes().length">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Mesa</th>
+          <th>Mesero</th>
+          <th>Estado</th>
+          <th>Total</th>
+          <th>Saldo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pedido of pendientes()">
+          <td>{{ pedido.id }}</td>
+          <td>{{ pedido.mesaNumero }}</td>
+          <td>{{ pedido.meseroNombre || pedido.meseroId }}</td>
+          <td>{{ pedido.estado }}</td>
+          <td>{{ pedido.total | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ pedido.saldoPendiente | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td><button type="button" (click)="seleccionarPedido(pedido)">Seleccionar</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
   <p class="error" *ngIf="error()">{{ error() }}</p>
 
   <div *ngIf="pagosInfo() as info" class="pagos-grid">

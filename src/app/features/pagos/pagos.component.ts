@@ -1,9 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 import { PagosApiService } from '../../core/services/pagos-api.service';
 import { PagosResponseDto, PagoDto } from '../../core/models/pago.models';
+import { PedidosApiService } from '../../core/services/pedidos-api.service';
+import { PedidoListDto } from '../../core/models/pedido.models';
 
 @Component({
   selector: 'app-pagos',
@@ -12,7 +14,7 @@ import { PagosResponseDto, PagoDto } from '../../core/models/pago.models';
   templateUrl: './pagos.component.html',
   styleUrl: './pagos.component.scss'
 })
-export class PagosComponent {
+export class PagosComponent implements OnInit {
   pedidoIdForm = this.fb.group({ pedidoId: [''] });
   pagoForm = this.fb.group({
     monto: [0],
@@ -20,10 +22,19 @@ export class PagosComponent {
   });
 
   pagosInfo = signal<PagosResponseDto | null>(null);
+  pendientes = signal<PedidoListDto[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
 
-  constructor(private fb: FormBuilder, private pagosApi: PagosApiService) {}
+  constructor(
+    private fb: FormBuilder,
+    private pagosApi: PagosApiService,
+    private pedidosApi: PedidosApiService
+  ) {}
+
+  ngOnInit(): void {
+    this.cargarPendientes();
+  }
 
   cargar(): void {
     const pedidoId = Number(this.pedidoIdForm.value.pedidoId);
@@ -42,6 +53,23 @@ export class PagosComponent {
         this.error.set(err?.error?.message ?? 'No se pudieron cargar los pagos');
         this.loading.set(false);
       }
+    });
+  }
+
+  seleccionarPedido(pedido: PedidoListDto): void {
+    this.pedidoIdForm.patchValue({ pedidoId: String(pedido.id) });
+    this.cargar();
+  }
+
+  cargarPendientes(): void {
+    this.pedidosApi.listar({ size: 200, sort: 'updatedAt,desc' }).subscribe({
+      next: (res) => {
+        const conSaldo = res.data.filter(
+          (p) => p.saldoPendiente > 0 && p.estado !== 'CANCELADO' && p.estado !== 'CERRADO'
+        );
+        this.pendientes.set(conSaldo);
+      },
+      error: () => this.pendientes.set([])
     });
   }
 

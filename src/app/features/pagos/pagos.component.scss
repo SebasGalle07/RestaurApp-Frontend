@@ -97,3 +97,30 @@ tbody tr:nth-child(even) {
   color: #dc2626;
   font-weight: 600;
 }
+
+.pendientes {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pendientes-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.pendientes table {
+  border-radius: 14px;
+}
+
+.pendientes th,
+.pendientes td {
+  padding: 0.6rem 0.8rem;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 0.9rem;
+}

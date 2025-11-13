@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE_URL = 'https://restaurapp-backend.onrender.com/api';
+const DEFAULT_API_BASE_URL = 'https://restaurapp-production-0b25.up.railway.app/api';
 const VERCEL_PROXY_BASE_URL = '/api';
 
 const resolveBaseUrl = (): string => {

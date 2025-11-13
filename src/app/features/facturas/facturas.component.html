@@ -44,8 +44,8 @@
             <td>{{ pedido.id }}</td>
             <td>{{ pedido.mesaNumero }}</td>
             <td>{{ pedido.meseroNombre || pedido.meseroId }}</td>
-            <td>{{ pedido.total | currency:'USD':'symbol':'1.2-2' }}</td>
-            <td>{{ pedido.saldoPendiente | currency:'USD':'symbol':'1.2-2' }}</td>
+            <td>{{ pedido.total | currency:'COP':'symbol':'1.0-0' }}</td>
+            <td>{{ pedido.saldoPendiente | currency:'COP':'symbol':'1.0-0' }}</td>
             <td><button type="button" (click)="seleccionarPedido(pedido)">Usar</button></td>
           </tr>
         </tbody>
@@ -56,7 +56,10 @@
   <section class="card">
     <h2>Facturas</h2>
     <p class="error" *ngIf="error()">{{ error() }}</p>
-    <table>
+    <div class="facturas-search">
+      <input [formControl]="searchControl" placeholder="Buscar por mesa, pedido o número" />
+    </div>
+    <table *ngIf="facturasFiltradas().length; else noFacturas">
       <thead>
         <tr>
           <th>ID</th>
@@ -69,17 +72,20 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let factura of facturas()">
+        <tr *ngFor="let factura of facturasFiltradas()">
           <td>{{ factura.id }}</td>
           <td>{{ factura.numero }}</td>
           <td>{{ factura.mesaNumero }}</td>
           <td>{{ factura.meseroNombre || factura.meseroId }}</td>
-          <td>{{ factura.total | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ factura.total | currency:'COP':'symbol':'1.0-0' }}</td>
           <td>{{ factura.fechaEmision | date:'short' }}</td>
           <td><button (click)="verDetalle(factura.id)">Detalle</button></td>
         </tr>
       </tbody>
     </table>
+    <ng-template #noFacturas>
+      <p class="muted">No se encontraron facturas con los criterios actuales.</p>
+    </ng-template>
 
     <article class="detalle" *ngIf="detalle() as fact">
       <h3>Factura #{{ fact.numero }}</h3>
@@ -87,7 +93,7 @@
         <li><strong>Pedido:</strong> {{ fact.pedidoId }}</li>
         <li><strong>Mesa:</strong> {{ fact.mesaNumero }} ({{ fact.mesaId }})</li>
         <li><strong>Mesero:</strong> {{ fact.meseroNombre || fact.meseroId }}</li>
-        <li><strong>Total:</strong> {{ fact.total | currency:'USD':'symbol':'1.2-2' }}</li>
+        <li><strong>Total:</strong> {{ fact.total | currency:'COP':'symbol':'1.0-0' }}</li>
         <li><strong>Fecha:</strong> {{ fact.fechaEmision | date:'medium' }}</li>
       </ul>
     </article>

@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import { FacturasApiService } from '../../core/services/facturas-api.service';
 import { FacturaDto, FacturaListDto } from '../../core/models/factura.models';
@@ -23,8 +23,10 @@ export class FacturasComponent implements OnInit {
     hasta: [''],
     sort: ['fechaEmision,desc']
   });
+  searchControl = new FormControl('');
 
   facturas = signal<FacturaListDto[]>([]);
+  facturasFiltradas = signal<FacturaListDto[]>([]);
   detalle = signal<FacturaDto | null>(null);
   facturables = signal<PedidoListDto[]>([]);
   loading = signal(false);
@@ -34,7 +36,9 @@ export class FacturasComponent implements OnInit {
     private fb: FormBuilder,
     private facturasApi: FacturasApiService,
     private pedidosApi: PedidosApiService
-  ) {}
+  ) {
+    this.searchControl.valueChanges.subscribe(() => this.aplicarFiltroFacturas());
+  }
 
   ngOnInit(): void {
     this.listar();
@@ -73,6 +77,7 @@ export class FacturasComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.facturas.set(res.data);
+        this.aplicarFiltroFacturas();
         this.loading.set(false);
       },
       error: (err) => {
@@ -108,5 +113,25 @@ export class FacturasComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  private aplicarFiltroFacturas(): void {
+    const term = (this.searchControl.value ?? '').trim().toLowerCase();
+    if (!term) {
+      this.facturasFiltradas.set(this.facturas());
+      return;
+    }
+    const filtered = this.facturas().filter((fact) => {
+      const mesa = fact.mesaNumero.toLowerCase();
+      const numero = fact.numero.toLowerCase();
+      const mesero = (fact.meseroNombre ?? '').toLowerCase();
+      return (
+        mesa.includes(term) ||
+        numero.includes(term) ||
+        mesero.includes(term) ||
+        String(fact.pedidoId).includes(term)
+      );
+    });
+    this.facturasFiltradas.set(filtered);
   }
 }

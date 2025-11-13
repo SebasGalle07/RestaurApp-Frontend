@@ -95,8 +95,8 @@
           <td>{{ pedido.mesaNumero }}</td>
           <td>{{ pedido.meseroNombre || pedido.meseroId }}</td>
           <td>{{ pedido.estado }}</td>
-          <td>{{ pedido.total | currency:'USD':'symbol':'1.2-2' }}</td>
-          <td>{{ pedido.saldoPendiente | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ pedido.total | currency:'COP':'symbol':'1.0-0' }}</td>
+          <td>{{ pedido.saldoPendiente | currency:'COP':'symbol':'1.0-0' }}</td>
           <td>{{ pedido.puedeFacturar ? 'Sí' : 'No' }}</td>
           <td>{{ pedido.createdAt | date:'short' }}</td>
         </tr>
@@ -113,7 +113,7 @@
               {{ pedido.listoParaEntrega ? 'Listo para entregar' : 'En cocina' }}
             </span>
             <span class="badge" [class.badge-warning]="pedido.saldoPendiente > 0" [class.badge-success]="pedido.saldoPendiente === 0">
-              Saldo: {{ pedido.saldoPendiente | currency:'USD':'symbol':'1.2-2' }}
+              Saldo: {{ pedido.saldoPendiente | currency:'COP':'symbol':'1.0-0' }}
             </span>
             <span class="badge" [class.badge-success]="pedido.puedeFacturar" [class.badge-muted]="!pedido.puedeFacturar">
               {{ pedido.puedeFacturar ? 'Listo para facturar' : 'Pendiente por facturar' }}
@@ -178,7 +178,7 @@
               <td>{{ item.itemMenuNombre }} ({{ item.itemMenuId }})</td>
               <td><input type="number" min="1" formControlName="cantidad" /></td>
               <td><input formControlName="notas" placeholder="Notas" /></td>
-              <td>{{ item.subtotal | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td>{{ item.subtotal | currency:'COP':'symbol':'1.0-0' }}</td>
               <td>
                 <select formControlName="estado">
                   <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>

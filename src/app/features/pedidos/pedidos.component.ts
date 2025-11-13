@@ -126,7 +126,13 @@ export class PedidosComponent implements OnInit {
     this.loading.set(true);
     this.pedidosApi.listar(query).subscribe({
       next: (res) => {
-        this.pedidos.set(res.data);
+        const visibles = res.data.filter((pedido) => {
+          const estado = pedido.estado;
+          const allowed = ['ABIERTO', 'EN_PREPARACION', 'LISTO'];
+          const pendientePago = (pedido.saldoPendiente ?? 0) > 0;
+          return allowed.includes(estado) || pendientePago;
+        });
+        this.pedidos.set(visibles);
         this.loading.set(false);
       },
       error: (err) => {

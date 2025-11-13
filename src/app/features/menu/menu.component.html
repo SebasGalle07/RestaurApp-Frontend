@@ -63,7 +63,7 @@
             <div class="muted" *ngIf="item.descripcion">{{ item.descripcion }}</div>
           </td>
           <td>{{ item.categoriaNombre }}</td>
-          <td>{{ item.precio | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ item.precio | currency:'COP':'symbol':'1.0-0' }}</td>
           <td>
             <span class="badge" [class.inactive]="!item.activo">{{ item.activo ? 'Activo' : 'Inactivo' }}</span>
           </td>

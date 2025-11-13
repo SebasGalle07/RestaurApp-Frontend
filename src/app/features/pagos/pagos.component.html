@@ -39,8 +39,8 @@
           <td>{{ pedido.mesaNumero }}</td>
           <td>{{ pedido.meseroNombre || pedido.meseroId }}</td>
           <td>{{ pedido.estado }}</td>
-          <td>{{ pedido.total | currency:'USD':'symbol':'1.2-2' }}</td>
-          <td>{{ pedido.saldoPendiente | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ pedido.total | currency:'COP':'symbol':'1.0-0' }}</td>
+          <td>{{ pedido.saldoPendiente | currency:'COP':'symbol':'1.0-0' }}</td>
           <td><button type="button" (click)="seleccionarPedido(pedido)">Seleccionar</button></td>
         </tr>
       </tbody>
@@ -52,7 +52,7 @@
   <div *ngIf="pagosInfo() as info" class="pagos-grid">
     <div class="saldo">
       <span>Saldo pendiente</span>
-      <strong>{{ info.saldoPendiente | currency:'USD':'symbol':'1.2-2' }}</strong>
+      <strong>{{ info.saldoPendiente | currency:'COP':'symbol':'1.0-0' }}</strong>
     </div>
 
     <form [formGroup]="pagoForm" (ngSubmit)="registrar()" class="pago-form">
@@ -84,7 +84,7 @@
       <tbody>
         <tr *ngFor="let pago of info.pagos">
           <td>{{ pago.id }}</td>
-          <td>{{ pago.monto | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ pago.monto | currency:'COP':'symbol':'1.0-0' }}</td>
           <td>{{ pago.metodo }}</td>
           <td>{{ pago.estado }}</td>
           <td>{{ pago.createdAt | date:'short' }}</td>

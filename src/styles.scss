@@ -1,19 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 :root {
-  --color-bg: #fff7f2;
+  --color-bg: #eef4f7;
   --color-surface: #ffffff;
-  --color-surface-muted: #fff0e6;
-  --color-surface-strong: #1a1b2b;
-  --color-primary: #f25c30;
-  --color-primary-contrast: #fff8f4;
-  --color-accent: #ffb200;
-  --color-success: #22c55e;
-  --color-warning: #f97316;
+  --color-surface-muted: #e6f4f2;
+  --color-surface-strong: #0f172a;
+  --color-primary: #0f766e;
+  --color-primary-contrast: #ecfeff;
+  --color-accent: #f59e0b;
+  --color-success: #16a34a;
+  --color-warning: #ea580c;
   --color-info: #2563eb;
-  --color-text: #261b1b;
-  --color-text-muted: #7c6f6a;
-  --color-border: #f1d7ca;
+  --color-text: #0f172a;
+  --color-text-muted: #5f6c80;
+  --color-border: #d7e1eb;
   --radius-lg: 24px;
   --radius-md: 18px;
   --radius-sm: 12px;
@@ -37,7 +37,7 @@ body {
 body {
   margin: 0;
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: radial-gradient(circle at top, #fff1e5 0%, #ffe7d2 45%, #ffe8db 70%, #fff7f2 100%);
+  background: radial-gradient(circle at top, #f7fbff 0%, #ecf4ff 40%, #eef4f7 100%);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
 }

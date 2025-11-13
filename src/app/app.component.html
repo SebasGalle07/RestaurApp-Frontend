@@ -11,8 +11,9 @@
 
       <nav class="nav">
         <a *ngFor="let link of protectedLinks"
-           [routerLink]="link.path"
-           routerLinkActive="active">
+           [routerLink]="['/', link.path]"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }">
           <span>{{ link.label }}</span>
         </a>
       </nav>

@@ -47,7 +47,7 @@ button.danger {
   align-items: center;
   padding: 1rem;
   border-radius: 12px;
-  background: #eef2ff;
+  background: var(--color-surface-muted);
 }
 
 .pago-form {
@@ -113,7 +113,7 @@ tbody tr:nth-child(even) {
 }
 
 .pendientes tr.selected {
-  background: rgba(242, 92, 48, 0.08);
+  background: rgba(15, 118, 110, 0.12);
 }
 
 .pendientes th,

@@ -5,6 +5,7 @@ export interface FacturaDto {
   mesaId: number;
   mesaNumero: string;
   meseroId: string;
+  meseroNombre?: string | null;
   total: number;
   fechaEmision: string;
 }

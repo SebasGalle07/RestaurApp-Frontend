@@ -1,9 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 import { FacturasApiService } from '../../core/services/facturas-api.service';
 import { FacturaDto, FacturaListDto } from '../../core/models/factura.models';
+import { PedidosApiService } from '../../core/services/pedidos-api.service';
+import { PedidoListDto } from '../../core/models/pedido.models';
 
 @Component({
   selector: 'app-facturas',
@@ -12,7 +14,7 @@ import { FacturaDto, FacturaListDto } from '../../core/models/factura.models';
   templateUrl: './facturas.component.html',
   styleUrl: './facturas.component.scss'
 })
-export class FacturasComponent {
+export class FacturasComponent implements OnInit {
   emitirForm = this.fb.group({ pedidoId: [''] });
   filtrosForm = this.fb.group({
     mesa_id: [''],
@@ -24,11 +26,19 @@ export class FacturasComponent {
 
   facturas = signal<FacturaListDto[]>([]);
   detalle = signal<FacturaDto | null>(null);
+  facturables = signal<PedidoListDto[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
 
-  constructor(private fb: FormBuilder, private facturasApi: FacturasApiService) {
+  constructor(
+    private fb: FormBuilder,
+    private facturasApi: FacturasApiService,
+    private pedidosApi: PedidosApiService
+  ) {}
+
+  ngOnInit(): void {
     this.listar();
+    this.cargarFacturables();
   }
 
   emitir(): void {
@@ -42,6 +52,7 @@ export class FacturasComponent {
       next: () => {
         this.emitirForm.reset();
         this.listar();
+        this.cargarFacturables();
       },
       error: (err) => {
         this.error.set(err?.error?.message ?? 'No se pudo emitir la factura');
@@ -69,6 +80,20 @@ export class FacturasComponent {
         this.loading.set(false);
       }
     });
+  }
+
+  cargarFacturables(): void {
+    this.pedidosApi.listar({ estado: 'ENTREGADO', size: 200, sort: 'updatedAt,desc' }).subscribe({
+      next: (res) => {
+        const listos = res.data.filter((p) => p.puedeFacturar);
+        this.facturables.set(listos);
+      },
+      error: () => this.facturables.set([])
+    });
+  }
+
+  seleccionarPedido(pedido: PedidoListDto): void {
+    this.emitirForm.patchValue({ pedidoId: String(pedido.id) });
   }
 
   verDetalle(id: number): void {

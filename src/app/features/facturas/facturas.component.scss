@@ -89,3 +89,39 @@ button {
 .error {
   color: #dc2626;
 }
+
+.facturables {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.facturables-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.facturables table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f1f5f9;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.facturables th,
+.facturables td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.facturables tbody tr:nth-child(even) {
+  background: #e2e8f0;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 0.9rem;
+}

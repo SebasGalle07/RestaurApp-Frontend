@@ -21,6 +21,36 @@
       </label>
       <button type="submit">Aplicar</button>
     </form>
+
+    <section class="facturables">
+      <header class="facturables-header">
+        <h3>Pedidos listos para facturar</h3>
+        <button type="button" (click)="cargarFacturables()">Actualizar</button>
+      </header>
+      <p class="muted" *ngIf="!facturables().length">No hay pedidos listos para facturar.</p>
+      <table *ngIf="facturables().length">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Mesa</th>
+            <th>Mesero</th>
+            <th>Total</th>
+            <th>Saldo</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pedido of facturables()">
+            <td>{{ pedido.id }}</td>
+            <td>{{ pedido.mesaNumero }}</td>
+            <td>{{ pedido.meseroNombre || pedido.meseroId }}</td>
+            <td>{{ pedido.total | currency:'USD':'symbol':'1.2-2' }}</td>
+            <td>{{ pedido.saldoPendiente | currency:'USD':'symbol':'1.2-2' }}</td>
+            <td><button type="button" (click)="seleccionarPedido(pedido)">Usar</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
   </aside>
 
   <section class="card">
@@ -31,7 +61,8 @@
         <tr>
           <th>ID</th>
           <th>Numero</th>
-          <th>Pedido</th>
+          <th>Mesa</th>
+          <th>Mesero</th>
           <th>Total</th>
           <th>Fecha</th>
           <th></th>
@@ -41,7 +72,8 @@
         <tr *ngFor="let factura of facturas()">
           <td>{{ factura.id }}</td>
           <td>{{ factura.numero }}</td>
-          <td>{{ factura.pedidoId }}</td>
+          <td>{{ factura.mesaNumero }}</td>
+          <td>{{ factura.meseroNombre || factura.meseroId }}</td>
           <td>{{ factura.total | currency:'USD':'symbol':'1.2-2' }}</td>
           <td>{{ factura.fechaEmision | date:'short' }}</td>
           <td><button (click)="verDetalle(factura.id)">Detalle</button></td>
@@ -54,7 +86,7 @@
       <ul>
         <li><strong>Pedido:</strong> {{ fact.pedidoId }}</li>
         <li><strong>Mesa:</strong> {{ fact.mesaNumero }} ({{ fact.mesaId }})</li>
-        <li><strong>Mesero:</strong> <span class="mono">{{ fact.meseroId }}</span></li>
+        <li><strong>Mesero:</strong> {{ fact.meseroNombre || fact.meseroId }}</li>
         <li><strong>Total:</strong> {{ fact.total | currency:'USD':'symbol':'1.2-2' }}</li>
         <li><strong>Fecha:</strong> {{ fact.fechaEmision | date:'medium' }}</li>
       </ul>

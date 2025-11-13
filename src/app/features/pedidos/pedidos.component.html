@@ -84,6 +84,8 @@
           <th>Mesero</th>
           <th>Estado</th>
           <th>Total</th>
+          <th>Saldo</th>
+          <th>Facturable</th>
           <th>Creado</th>
         </tr>
       </thead>
@@ -91,9 +93,11 @@
         <tr *ngFor="let pedido of pedidos()" (click)="seleccionarPedido(pedido)" [class.selected]="seleccionado()?.id === pedido.id">
           <td>{{ pedido.id }}</td>
           <td>{{ pedido.mesaNumero }}</td>
-          <td class="mono">{{ pedido.meseroId }}</td>
+          <td>{{ pedido.meseroNombre || pedido.meseroId }}</td>
           <td>{{ pedido.estado }}</td>
           <td>{{ pedido.total | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ pedido.saldoPendiente | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ pedido.puedeFacturar ? 'Sí' : 'No' }}</td>
           <td>{{ pedido.createdAt | date:'short' }}</td>
         </tr>
       </tbody>
@@ -101,11 +105,29 @@
 
     <section class="detalle" *ngIf="seleccionado() as pedido">
       <header>
-        <h3>Pedido #{{ pedido.id }}</h3>
+        <div>
+          <h3>Pedido #{{ pedido.id }}</h3>
+          <div class="badges">
+            <span class="badge">{{ pedido.estado }}</span>
+            <span class="badge" [class.badge-success]="pedido.listoParaEntrega" [class.badge-muted]="!pedido.listoParaEntrega">
+              {{ pedido.listoParaEntrega ? 'Listo para entregar' : 'En cocina' }}
+            </span>
+            <span class="badge" [class.badge-warning]="pedido.saldoPendiente > 0" [class.badge-success]="pedido.saldoPendiente === 0">
+              Saldo: {{ pedido.saldoPendiente | currency:'USD':'symbol':'1.2-2' }}
+            </span>
+            <span class="badge" [class.badge-success]="pedido.puedeFacturar" [class.badge-muted]="!pedido.puedeFacturar">
+              {{ pedido.puedeFacturar ? 'Listo para facturar' : 'Pendiente por facturar' }}
+            </span>
+          </div>
+        </div>
         <div class="actions">
           <button (click)="actualizarPedido()">Actualizar notas</button>
-          <button (click)="enviarACocina()">Enviar a cocina</button>
-          <button class="danger" (click)="cancelar()">Cancelar</button>
+          <button (click)="enviarACocina()" [disabled]="pedido.estado !== 'ABIERTO'">Enviar a cocina</button>
+          <button (click)="marcarListo()" *ngIf="pedido.estado === 'EN_PREPARACION'">Marcar listo</button>
+          <button (click)="marcarEntregado()" *ngIf="pedido.estado === 'LISTO'">Marcar entregado</button>
+          <button class="danger" (click)="cancelar()" [disabled]="pedido.estado === 'CERRADO' || pedido.estado === 'CANCELADO'">
+            Cancelar
+          </button>
         </div>
       </header>
 

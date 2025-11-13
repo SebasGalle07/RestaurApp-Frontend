@@ -38,6 +38,14 @@ export class PedidosApiService {
     return this.http.post<ApiResponse<{ message: string }>>(`${this.baseUrl}/${id}/enviar-a-cocina`, {});
   }
 
+  marcarListo(id: number): Observable<ApiResponse<{ message: string }>> {
+    return this.http.post<ApiResponse<{ message: string }>>(`${this.baseUrl}/${id}/marcar-listo`, {});
+  }
+
+  marcarEntregado(id: number): Observable<ApiResponse<{ message: string }>> {
+    return this.http.post<ApiResponse<{ message: string }>>(`${this.baseUrl}/${id}/marcar-entregado`, {});
+  }
+
   cancelar(id: number): Observable<ApiResponse<{ message: string }>> {
     return this.http.post<ApiResponse<{ message: string }>>(`${this.baseUrl}/${id}/cancelar`, {});
   }

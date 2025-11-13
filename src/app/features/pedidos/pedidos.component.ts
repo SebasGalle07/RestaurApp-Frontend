@@ -229,6 +229,32 @@ export class PedidosComponent implements OnInit {
     });
   }
 
+  marcarListo(): void {
+    const pedido = this.seleccionado();
+    if (!pedido) return;
+    this.loading.set(true);
+    this.pedidosApi.marcarListo(pedido.id).subscribe({
+      next: () => this.seleccionarPedido(pedido),
+      error: (err) => {
+        this.error.set(err?.error?.message ?? 'No se pudo marcar como listo');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  marcarEntregado(): void {
+    const pedido = this.seleccionado();
+    if (!pedido) return;
+    this.loading.set(true);
+    this.pedidosApi.marcarEntregado(pedido.id).subscribe({
+      next: () => this.seleccionarPedido(pedido),
+      error: (err) => {
+        this.error.set(err?.error?.message ?? 'No se pudo marcar como entregado');
+        this.loading.set(false);
+      }
+    });
+  }
+
   cancelar(): void {
     const pedido = this.seleccionado();
     if (!pedido) return;

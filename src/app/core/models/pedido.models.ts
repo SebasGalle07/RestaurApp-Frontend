@@ -24,9 +24,13 @@ export interface PedidoListDto {
   mesaId: number;
   mesaNumero: string;
   meseroId: string;
+  meseroNombre?: string | null;
   estado: PedidoEstado;
   total: number;
   createdAt: string;
+  saldoPendiente: number;
+  listoParaEntrega: boolean;
+  puedeFacturar: boolean;
 }
 
 export interface PedidoDto {
@@ -34,11 +38,15 @@ export interface PedidoDto {
   mesaId: number;
   mesaNumero: string;
   meseroId: string;
+  meseroNombre?: string | null;
   estado: PedidoEstado;
   total: number;
   notas?: string | null;
   createdAt: string;
   updatedAt?: string | null;
+  saldoPendiente: number;
+  listoParaEntrega: boolean;
+  puedeFacturar: boolean;
   items: PedidoItemDto[];
 }
 

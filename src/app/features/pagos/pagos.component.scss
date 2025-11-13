@@ -15,15 +15,12 @@ header {
   align-items: center;
 }
 
-.pedido-form {
+.seleccion {
   display: flex;
-  gap: 0.5rem;
-}
-
-.pedido-form input {
-  padding: 0.6rem 0.8rem;
-  border-radius: 10px;
-  border: 1px solid #cbd5f5;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  text-align: right;
 }
 
 button {
@@ -113,6 +110,10 @@ tbody tr:nth-child(even) {
 
 .pendientes table {
   border-radius: 14px;
+}
+
+.pendientes tr.selected {
+  background: rgba(242, 92, 48, 0.08);
 }
 
 .pendientes th,

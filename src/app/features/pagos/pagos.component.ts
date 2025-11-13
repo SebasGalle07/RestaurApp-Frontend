@@ -15,7 +15,6 @@ import { PedidoListDto } from '../../core/models/pedido.models';
   styleUrl: './pagos.component.scss'
 })
 export class PagosComponent implements OnInit {
-  pedidoIdForm = this.fb.group({ pedidoId: [''] });
   pagoForm = this.fb.group({
     monto: [0],
     metodo: ['EFECTIVO']
@@ -23,8 +22,10 @@ export class PagosComponent implements OnInit {
 
   pagosInfo = signal<PagosResponseDto | null>(null);
   pendientes = signal<PedidoListDto[]>([]);
+  seleccionado = signal<PedidoListDto | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
+  cambioInfo = signal<string | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -36,10 +37,14 @@ export class PagosComponent implements OnInit {
     this.cargarPendientes();
   }
 
+  private obtenerPedidoId(): number | null {
+    return this.seleccionado()?.id ?? null;
+  }
+
   cargar(): void {
-    const pedidoId = Number(this.pedidoIdForm.value.pedidoId);
+    const pedidoId = this.obtenerPedidoId();
     if (!pedidoId) {
-      this.error.set('Debes indicar un ID de pedido');
+      this.error.set('Selecciona un pedido de la lista.');
       return;
     }
     this.loading.set(true);
@@ -57,7 +62,8 @@ export class PagosComponent implements OnInit {
   }
 
   seleccionarPedido(pedido: PedidoListDto): void {
-    this.pedidoIdForm.patchValue({ pedidoId: String(pedido.id) });
+    this.seleccionado.set(pedido);
+    this.cambioInfo.set(null);
     this.cargar();
   }
 
@@ -74,20 +80,25 @@ export class PagosComponent implements OnInit {
   }
 
   registrar(): void {
-    const pedidoId = Number(this.pedidoIdForm.value.pedidoId);
+    const pedidoId = this.obtenerPedidoId();
     if (!pedidoId) {
       this.error.set('Selecciona un pedido');
       return;
     }
     const payload = this.pagoForm.getRawValue();
     this.loading.set(true);
+    this.cambioInfo.set(null);
     this.pagosApi.crear(pedidoId, {
       monto: Number(payload.monto) || 0,
       metodo: payload.metodo ?? 'EFECTIVO'
     }).subscribe({
-      next: () => {
+      next: (res) => {
         this.cargar();
         this.pagoForm.reset({ monto: 0, metodo: 'EFECTIVO' });
+        const cambio = res.data.cambio ?? 0;
+        if (cambio > 0) {
+          this.cambioInfo.set(`Cambio a entregar: ${this.formatearMoneda(cambio)}`);
+        }
       },
       error: (err) => {
         this.error.set(err?.error?.message ?? 'No se pudo registrar el pago');
@@ -96,8 +107,16 @@ export class PagosComponent implements OnInit {
     });
   }
 
+  private formatearMoneda(valor: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2
+    }).format(valor);
+  }
+
   anular(pago: PagoDto): void {
-    const pedidoId = Number(this.pedidoIdForm.value.pedidoId);
+    const pedidoId = this.obtenerPedidoId();
     if (!pedidoId) return;
     if (!confirm('Anular pago?')) return;
     this.loading.set(true);

@@ -1,10 +1,18 @@
 <section class="card">
   <header>
-    <h2>Pagos por pedido</h2>
-    <form [formGroup]="pedidoIdForm" (ngSubmit)="cargar()" class="pedido-form">
-      <input formControlName="pedidoId" placeholder="ID de pedido" />
-      <button type="submit">Cargar</button>
-    </form>
+    <div>
+      <h2>Pagos por pedido</h2>
+      <p class="muted">
+        Selecciona un pedido pendiente para ver su saldo y registrar pagos.
+      </p>
+    </div>
+    <div class="seleccion" *ngIf="seleccionado() as sel">
+      <div>
+        <strong>Pedido #{{ sel.id }}</strong>
+        <span>Mesa {{ sel.mesaNumero }} · Mesero {{ sel.meseroNombre || sel.meseroId }}</span>
+      </div>
+      <button type="button" (click)="cargar()">Actualizar pagos</button>
+    </div>
   </header>
 
   <section class="pendientes">
@@ -26,7 +34,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let pedido of pendientes()">
+        <tr *ngFor="let pedido of pendientes()" [class.selected]="seleccionado()?.id === pedido.id">
           <td>{{ pedido.id }}</td>
           <td>{{ pedido.mesaNumero }}</td>
           <td>{{ pedido.meseroNombre || pedido.meseroId }}</td>
@@ -60,6 +68,7 @@
       </label>
       <button type="submit">Registrar pago</button>
     </form>
+    <p class="muted" *ngIf="cambioInfo()">{{ cambioInfo() }}</p>
 
     <table>
       <thead>

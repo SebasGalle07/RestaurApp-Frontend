@@ -18,8 +18,8 @@ export class PagosApiService {
     return this.http.get<ApiResponse<PagosResponseDto>>(this.url(pedidoId));
   }
 
-  crear(pedidoId: number, payload: PagoCreateDto): Observable<ApiResponse<{ id: number }>> {
-    return this.http.post<ApiResponse<{ id: number }>>(this.url(pedidoId), payload);
+  crear(pedidoId: number, payload: PagoCreateDto): Observable<ApiResponse<{ id: number; cambio: number }>> {
+    return this.http.post<ApiResponse<{ id: number; cambio: number }>>(this.url(pedidoId), payload);
   }
 
   anular(pedidoId: number, pagoId: number): Observable<ApiResponse<{ message: string }>> {
